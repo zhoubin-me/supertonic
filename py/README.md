@@ -120,6 +120,34 @@ This will:
 - Default speed is 1.05 if not specified
 - Recommended speed range is between 0.9 and 1.5 for natural-sounding results
 
+## Service Usage (FastAPI)
+
+Run the HTTP service:
+```bash
+uv run uvicorn service:app --host 0.0.0.0 --port 8000
+```
+
+Health check:
+```bash
+curl http://localhost:8000/health
+```
+
+Single request (non-batch) and save WAV:
+```bash
+curl -X POST http://localhost:8000/tts \
+  -H "Content-Type: application/json" \
+  -d '{"text":"Hello from Supertonic.","lang":"en","voice_style":"assets/voice_styles/M1.json","total_step":5,"speed":1.05}' \
+  --output hello.wav
+```
+
+Batch request (returns a zip of WAV files):
+```bash
+curl -X POST http://localhost:8000/tts \
+  -H "Content-Type: application/json" \
+  -d '{"text":["Hello","Hola"],"lang":["en","es"],"voice_style":["assets/voice_styles/M1.json","assets/voice_styles/F1.json"],"total_step":5,"speed":1.05,"batch":true}' \
+  --output tts_outputs.zip
+```
+
 ## Available Arguments
 
 | Argument | Type | Default | Description |
@@ -142,4 +170,3 @@ This will:
 - **Long-Form Inference**: Without `--batch` flag, long texts are automatically chunked and combined into a single audio file with natural pauses
 - **Quality vs Speed**: Higher `--total-step` values produce better quality but take longer
 - **GPU Support**: GPU mode is not supported yet
-
